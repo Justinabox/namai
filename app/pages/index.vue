@@ -7,8 +7,7 @@ import {
   DotGrid,
   GlassTiles,
   Group,
-  Spherize,
-  Spiral,
+  Liquify,
   WaveDistortion
 } from 'shaders/vue'
 import SparklesText from '/components/ui/sparkles-text/SparklesText.vue'
@@ -21,7 +20,7 @@ import SparklesText from '/components/ui/sparkles-text/SparklesText.vue'
         <Group :visible="true">
           <DotGrid
             color="#ffffff"
-            :density="120"
+            :density="90"
             :dot-size="0.3"
             :twinkle="0"/>
           <WaveDistortion
@@ -73,6 +72,11 @@ import SparklesText from '/components/ui/sparkles-text/SparklesText.vue'
           :size="0.2"
           :softness="0.5"
           :speed="0.5"/>
+        <Liquify
+            :decay="1"
+            edges="mirror"
+            :intensity="1"
+            :radius="2"/>
         <GlassTiles
           :intensity="2"
           :rotation="0"
