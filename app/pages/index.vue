@@ -20,7 +20,7 @@ import SparklesText from '/components/ui/sparkles-text/SparklesText.vue'
         <Group :visible="true">
           <DotGrid
             color="#ffffff"
-            :density="90"
+            :density="80"
             :dot-size="0.3"
             :twinkle="0"/>
           <WaveDistortion

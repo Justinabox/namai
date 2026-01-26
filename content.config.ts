@@ -11,6 +11,7 @@ export default defineContentConfig({
         description: z.string(),
         year: z.number(),
         cover: z.string().url(),
+        width: z.number(),
       })
     })
   }
