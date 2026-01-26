@@ -1,8 +1,9 @@
 ---
 title: 'Lumin'
-description: 'threejs'
+description: 'ThreeJS music player and visualizer'
 year: 2025
-cover: 'https://cdn.justzhu.com/prod/projects/lumin/cover2.mp4'
-width: 3
+weight: 12
+cover: 'https://cdn.justzhu.com/prod/projects/lumin/cover.mp4'
+type: 'landscape'
 ---
 

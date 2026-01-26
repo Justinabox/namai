@@ -11,7 +11,8 @@ export default defineContentConfig({
         description: z.string(),
         year: z.number(),
         cover: z.string().url(),
-        width: z.number(),
+        weight: z.number().default(999),
+        type: z.enum(['portrait', 'landscape']),
       })
     })
   }

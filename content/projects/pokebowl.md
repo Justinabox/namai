@@ -1,8 +1,9 @@
 ---
 title: 'PokeBowl'
-description: 'A mobile app!'
+description: 'automagically create grocery shopping list from recipes!'
 year: 2025
+weight: 31
 cover: 'https://cdn.justzhu.com/prod/projects/pokebowl/cover.jpg'
-width: 1
+type: 'portrait'
 ---
 
