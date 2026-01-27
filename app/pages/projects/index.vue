@@ -1,8 +1,11 @@
 <script setup>
 import SparklesText from '/components/ui/sparkles-text/SparklesText.vue'
 import ScrollSnap from '/components/ui/ScrollSnap.vue'
+import Waterfall from '/components/ui/Waterfall.vue'
+import { PROJECT_CATEGORIES } from '/lib/constants'
+
 const allProjects = await queryCollection('projects').order('weight', 'ASC').all()
-console.log(allProjects)
+const playgrounds = await queryCollection('playgrounds').order('year', 'DESC').all()
 </script>
 
 <template>
@@ -25,20 +28,17 @@ console.log(allProjects)
         </div>
 
         <!-- Content -->
-        <div class="min-h-0 w-full grow flex px-8 lg:px-16 2xl:px-20">
+        <div class="min-h-0 w-full grow flex px-8 lg:px-16 2xl:px-20 overflow-y-scroll">
             <!-- only visible if >=md -->
             <div class="pt-8 md:pr-8 lg:pr-12 xl:pr-16 2xl:pr-20 text-neutral-600 hidden md:block">
-                <h1 class="md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-pixelify-sans">XR</h1>
-                <h1 class="md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-pixelify-sans">IoT</h1>
-                <h1 class="md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-pixelify-sans">Fullstack</h1>
-                <h1 class="md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-pixelify-sans">Frontend</h1>
-                <h1 class="md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-pixelify-sans">DevOps</h1>
-                <h1 class="md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-pixelify-sans">Mobile</h1>
+                <!-- For loop all the possible enum values in category -->
+                <h1 v-for="category in PROJECT_CATEGORIES" :key="category" 
+                    class="md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-pixelify-sans">{{ category }}</h1>
                 <h1 class="md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-pixelify-sans text-white">Show All</h1>
             </div>
             
             <ScrollSnap
-                class="flex-1 min-h-0 px-4 gap-2 lg:gap-4 lg:px-8 my-4 flex flex-col overflow-y-scroll"
+                class="flex-1 min-h-0 px-4 gap-2 lg:gap-4 lg:px-8 my-4 flex flex-col"
                 :disable-snap-below-md="true"
             >
                 <NuxtLink :to="project.path" v-for="project in allProjects" :key="project.id" :class="[
@@ -54,8 +54,14 @@ console.log(allProjects)
                         project.type === 'landscape' ? 'w-full h-auto sm:max-h-[80vh]' : 'h-[70vh] w-auto max-w-full'
                     ]">
                 </NuxtLink>
-            </ScrollSnap>
-        </div>
 
+
+                <Waterfall
+                    :items="playgrounds"
+                    class="mt-6"
+                />
+            </ScrollSnap>
+
+        </div>
     </div>
 </template>

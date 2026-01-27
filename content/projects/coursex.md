@@ -5,5 +5,7 @@ year: 2025
 weight: 11
 cover: 'https://cdn.justzhu.com/prod/projects/coursex/cover.jpg'
 type: 'landscape'
+tags: ['Frontend', 'Backend']
+category: 'Technology'
 ---
 

@@ -5,5 +5,7 @@ year: 2025
 weight: 41
 cover: 'https://cdn.justzhu.com/prod/projects/the-village/cover.jpg'
 type: 'landscape'
+tags: []
+category: 'Creative'
 ---
 
