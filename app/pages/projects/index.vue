@@ -4,8 +4,19 @@ import ScrollSnap from '/components/ui/ScrollSnap.vue'
 import Waterfall from '/components/ui/Waterfall.vue'
 import { PROJECT_CATEGORIES } from '/lib/constants'
 
-const allProjects = await queryCollection('projects').order('weight', 'ASC').all()
-const playgrounds = await queryCollection('playgrounds').order('year', 'DESC').all()
+const { data: allProjects, pending: projectsPending, error: projectsError } = await useAsyncData(
+  'all-projects',
+  () => queryCollection('projects').order('weight', 'ASC').all(),
+  { timeout: 30000, server: false }
+)
+
+const { data: playgrounds, pending: playgroundsPending, error: playgroundsError } = await useAsyncData(
+  'all-playgrounds',
+  () => queryCollection('playgrounds').order('year', 'DESC').all(),
+  { timeout: 30000, server: false }
+)
+
+const isLoading = computed(() => projectsPending.value || playgroundsPending.value)
 </script>
 
 <template>
@@ -37,7 +48,14 @@ const playgrounds = await queryCollection('playgrounds').order('year', 'DESC').a
                 <h1 class="md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-pixelify-sans text-white">Show All</h1>
             </div>
             
+            <div v-if="isLoading" class="flex-1 flex items-center justify-center">
+                <div class="text-2xl font-pixelify-sans text-neutral-600">Loading...</div>
+            </div>
+            <div v-else-if="projectsError || playgroundsError" class="flex-1 flex items-center justify-center">
+                <div class="text-2xl font-pixelify-sans text-red-500">Failed to load projects</div>
+            </div>
             <ScrollSnap
+                v-else
                 class="flex-1 min-h-0 px-4 gap-2 lg:gap-4 lg:px-8 my-4 flex flex-col"
                 :disable-snap-below-md="true"
             >
