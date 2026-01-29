@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
+function debounce<T extends (...args: any[]) => any>(func: T, wait: number): (...args: Parameters<T>) => void {
+  let timeout: ReturnType<typeof setTimeout> | null = null
+  return function(...args: Parameters<T>) {
+    if (timeout) clearTimeout(timeout)
+    timeout = setTimeout(() => func(...args), wait)
+  }
+}
+
 const props = withDefaults(
   defineProps<{
-    /**
-     * When true, snapping is disabled when viewport < md.
-     * (md defaults to 768px, matching Tailwind's default breakpoint.)
-     */
     disableSnapBelowMd?: boolean
     mdBreakpointPx?: number
   }>(),
@@ -16,74 +20,89 @@ const props = withDefaults(
   },
 )
 
+const CONFIG = {
+  SNAP_PAUSE_THRESHOLD: 24,
+  TOP_POSITION_THRESHOLD: 30,
+  OVERSIZE_THRESHOLD: 2,
+  CLASS_NAMES: {
+    SCROLL_SNAP: 'scroll-snap',
+    SNAP_ENABLED: 'scroll-snap--enabled',
+    SNAP_DISABLED: 'scroll-snap--disabled',
+    SNAP_SCALE: 'scroll-snap--scale',
+    SNAP_SCALE_DISABLED: 'scroll-snap--scale-disabled',
+    SNAP_PAUSED: 'scroll-snap--paused',
+    SNAP_OVERSIZE: 'snap-oversize',
+    SNAP_ALIGN_START: 'snap-align-start',
+    SNAP_ITEM_ACTIVE: 'scroll-snap__item--active',
+  },
+} as const
+
 const scrollSnapEl = ref<HTMLDivElement | null>(null)
 const isMdUp = ref(true)
 const activeItem = ref<HTMLElement | null>(null)
+const childrenCount = ref(0)
 
 const snapEnabled = computed(() => !(props.disableSnapBelowMd && !isMdUp.value))
 const scaleEnabled = computed(() => !(props.disableSnapBelowMd && !isMdUp.value))
 
 let mql: MediaQueryList | null = null
 let mqlHandler: ((e: MediaQueryListEvent) => void) | null = null
-
-// Use scroll position to track which item is "active" (centered) for scaling.
-// We calculate which item's center is closest to the viewport center.
 let scrollHandler: (() => void) | null = null
+let resizeObserver: ResizeObserver | null = null
+let windowResizeHandler: (() => void) | null = null
 
-function isViewportInsideItem(container: HTMLElement, child: HTMLElement) {
-  const viewTop = container.scrollTop
-  const viewBottom = viewTop + container.clientHeight
-  const childTop = child.offsetTop
-  const childBottom = childTop + child.offsetHeight
-  return viewTop >= childTop && viewBottom <= childBottom
+function getScrollableChildren(container: HTMLElement): HTMLElement[] {
+  return Array.from(container.children).filter(
+    el => el.tagName !== 'STYLE' && el.tagName !== 'SCRIPT'
+  ) as HTMLElement[]
 }
 
-function updateActiveItem() {
-  if (!scrollSnapEl.value) return
-  const container = scrollSnapEl.value
-  const children = Array.from(container.children).filter(el => el.tagName !== 'STYLE' && el.tagName !== 'SCRIPT') as HTMLElement[]
-  if (children.length === 0) return
+function handleTopPosition(container: HTMLElement, children: HTMLElement[]): boolean {
+  if (container.scrollTop >= CONFIG.TOP_POSITION_THRESHOLD) return false
 
-  const containerRect = container.getBoundingClientRect()
-  const center = containerRect.top + container.clientHeight / 2
-  
-  // If we are at the very top, favor the first item
-  // Increase threshold to handle bounce/overscroll or small offsets
-  // Only applies if the first item is indeed supposed to be at the top (snap-align-start)
-  if (container.scrollTop < 30) {
-    children.forEach((child, index) => {
-      if (index === 0) child.classList.add('scroll-snap__item--active')
-      else child.classList.remove('scroll-snap__item--active')
-    })
-    activeItem.value = children[0] ?? null
-    return
-  }
+  children.forEach((child, index) => {
+    if (index === 0) {
+      child.classList.add(CONFIG.CLASS_NAMES.SNAP_ITEM_ACTIVE)
+    } else {
+      child.classList.remove(CONFIG.CLASS_NAMES.SNAP_ITEM_ACTIVE)
+    }
+  })
+  activeItem.value = children[0] ?? null
+  return true
+}
 
+function findOversizeItem(container: HTMLElement, children: HTMLElement[]): HTMLElement | null {
+  return children.find(child => {
+    if (!child.classList.contains(CONFIG.CLASS_NAMES.SNAP_OVERSIZE)) return false
+    
+    const viewTop = container.scrollTop
+    const viewBottom = viewTop + container.clientHeight
+    const childTop = child.offsetTop
+    const childBottom = childTop + child.offsetHeight
+    
+    return viewTop >= childTop && viewBottom <= childBottom
+  }) ?? null
+}
+
+function findClosestItem(
+  children: HTMLElement[],
+  containerRect: DOMRect,
+  viewportCenter: number
+): HTMLElement | null {
   let closest: HTMLElement | null = null
   let minDiff = Infinity
 
-  const oversizeInView = children.find(child => {
-    if (!child.classList.contains('snap-oversize')) return false
-    return isViewportInsideItem(container, child)
-  })
-  if (oversizeInView) {
-    closest = oversizeInView
-    minDiff = -1
-  }
-
   children.forEach(child => {
     if (minDiff < 0) return
-    const rect = child.getBoundingClientRect()
     
-    // Determine target based on alignment
-    // If it's start-aligned, we want its top to be at 0
-    // If it's center-aligned, we want its center to be at viewport center
+    const rect = child.getBoundingClientRect()
     let diff = 0
-    if (child.classList.contains('snap-align-start')) {
+
+    if (child.classList.contains(CONFIG.CLASS_NAMES.SNAP_ALIGN_START)) {
       diff = Math.abs(rect.top)
     } else {
       const childCenter = rect.top + rect.height / 2
-      diff = Math.abs(childCenter - center)
+      diff = Math.abs(childCenter - viewportCenter)
     }
 
     if (diff < minDiff) {
@@ -92,100 +111,140 @@ function updateActiveItem() {
     }
   })
 
-  if (closest) {
-    children.forEach(child => {
-      if (child === closest) child.classList.add('scroll-snap__item--active')
-      else child.classList.remove('scroll-snap__item--active')
-    })
-    activeItem.value = closest
-  }
+  return closest
 }
 
-// Check if items can be centered in the viewport.
-// If an item's center is closer to the top than the viewport center (and cannot be scrolled up further),
-// we align it to 'start' so it snaps to the top instead of trying to center (which would be unreachable).
-function updateSnapAlignments() {
-  if (!scrollSnapEl.value) return
-  const container = scrollSnapEl.value
-  const viewportHeight = container.clientHeight
-  const halfViewport = viewportHeight / 2
-  
-  // We need offsets relative to the container.
-  // Since children are direct descendants, offsetTop is relative to the container (if positioned).
-  // The container is overflow-y: auto, so it's an offset parent.
-  const children = Array.from(container.children).filter(el => el.tagName !== 'STYLE' && el.tagName !== 'SCRIPT') as HTMLElement[]
-  
+function updateActiveClasses(
+  children: HTMLElement[],
+  activeChild: HTMLElement | null
+): void {
   children.forEach(child => {
-    // Use a small tolerance or 90% threshold to treat near-full-height items as oversize
-    // so they get the start-alignment + margin treatment instead of centering.
-    const isOversize = child.offsetHeight >= viewportHeight - 2
-    if (isOversize) child.classList.add('snap-oversize')
-    else child.classList.remove('snap-oversize')
-
-    // Determine the child's center position relative to the start of the scrollable content
-    const childCenter = child.offsetTop + child.offsetHeight / 2
-    
-    // If the center is physically located above the "fold" required for centering
-    // (i.e. we can't scroll up enough to bring it to center), force start alignment.
-    if (isOversize || childCenter < halfViewport) {
-      child.classList.add('snap-align-start')
+    if (child === activeChild) {
+      child.classList.add(CONFIG.CLASS_NAMES.SNAP_ITEM_ACTIVE)
     } else {
-      child.classList.remove('snap-align-start')
+      child.classList.remove(CONFIG.CLASS_NAMES.SNAP_ITEM_ACTIVE)
     }
   })
 }
 
-let resizeObserver: ResizeObserver | null = null
-const snapPauseThreshold = 24
-
-function updateSnapPause() {
+function updateActiveItem(): void {
+  if (!scrollSnapEl.value) return
   const container = scrollSnapEl.value
-  if (!container) return
-  if (!snapEnabled.value) {
-    container.classList.remove('scroll-snap--paused')
-    return
+  const children = getScrollableChildren(container)
+  if (children.length === 0) return
+
+  const containerRect = container.getBoundingClientRect()
+  const viewportCenter = containerRect.top + container.clientHeight / 2
+
+  if (handleTopPosition(container, children)) return
+
+  const oversizeItem = findOversizeItem(container, children)
+  const closestItem = oversizeItem ?? findClosestItem(children, containerRect, viewportCenter)
+
+  if (closestItem) {
+    updateActiveClasses(children, closestItem)
+    activeItem.value = closestItem
   }
-  const viewTop = container.scrollTop
-  const children = Array.from(container.children).filter(el => el.tagName !== 'STYLE' && el.tagName !== 'SCRIPT') as HTMLElement[]
-  const oversizeInViewTop = children.find(child => {
-    if (!child.classList.contains('snap-oversize')) return false
+}
+
+function updateChildSnapAlignments(
+  child: HTMLElement,
+  viewportHeight: number,
+  halfViewport: number
+): void {
+  const isOversize = child.offsetHeight >= viewportHeight - CONFIG.OVERSIZE_THRESHOLD
+  child.classList.toggle(CONFIG.CLASS_NAMES.SNAP_OVERSIZE, isOversize)
+
+  const childCenter = child.offsetTop + child.offsetHeight / 2
+  const shouldAlignStart = isOversize || childCenter < halfViewport
+  child.classList.toggle(CONFIG.CLASS_NAMES.SNAP_ALIGN_START, shouldAlignStart)
+}
+
+function updateSnapAlignments(): void {
+  if (!scrollSnapEl.value) return
+  const container = scrollSnapEl.value
+  const viewportHeight = container.clientHeight
+  const halfViewport = viewportHeight / 2
+  const children = getScrollableChildren(container)
+
+  children.forEach(child => {
+    updateChildSnapAlignments(child, viewportHeight, halfViewport)
+  })
+}
+
+function findOversizeInViewTop(
+  children: HTMLElement[],
+  viewTop: number
+): HTMLElement | null {
+  return children.find(child => {
+    if (!child.classList.contains(CONFIG.CLASS_NAMES.SNAP_OVERSIZE)) return false
+    
     const childTop = child.offsetTop
     const childBottom = childTop + child.offsetHeight
     return viewTop >= childTop && viewTop < childBottom
-  })
+  }) ?? null
+}
+
+function updateSnapPause(): void {
+  const container = scrollSnapEl.value
+  if (!container) return
+  
+  if (!snapEnabled.value) {
+    container.classList.remove(CONFIG.CLASS_NAMES.SNAP_PAUSED)
+    return
+  }
+
+  const viewTop = container.scrollTop
+  const children = getScrollableChildren(container)
+  const oversizeInViewTop = findOversizeInViewTop(children, viewTop)
 
   if (!oversizeInViewTop) {
-    container.classList.remove('scroll-snap--paused')
+    container.classList.remove(CONFIG.CLASS_NAMES.SNAP_PAUSED)
     return
   }
 
   const childTop = oversizeInViewTop.offsetTop
-  const isNearTop = viewTop <= childTop + snapPauseThreshold
-
-  if (isNearTop) container.classList.remove('scroll-snap--paused')
-  else container.classList.add('scroll-snap--paused')
+  const isNearTop = viewTop <= childTop + CONFIG.SNAP_PAUSE_THRESHOLD
+  container.classList.toggle(CONFIG.CLASS_NAMES.SNAP_PAUSED, !isNearTop)
 }
 
-function setupObserver() {
-  if (scrollHandler) return
+function setupObserver(): void {
+  if (!scrollSnapEl.value || scrollHandler) return
 
-  // Run alignment check initially
   updateSnapAlignments()
 
-  // Observe resizing of container and children to handle dynamic content (e.g. images loading)
-  // This ensures snap alignments are updated if items grow/shrink
-  resizeObserver = new ResizeObserver(() => {
-    // Debounce or just run? RAF in scrollHandler handles active item, 
-    // but alignments need immediate update or next RAF.
-    // We can just run it.
+  const debouncedUpdate = debounce(() => {
     updateSnapAlignments()
-    // Re-check active item
     updateActiveItem()
+  }, 150)
+
+  resizeObserver = new ResizeObserver((entries) => {
+    if (entries.some(entry => entry.contentRect.height > 0 || entry.contentRect.width > 0)) {
+      debouncedUpdate()
+    }
   })
   
-  if (scrollSnapEl.value) {
+  try {
     resizeObserver.observe(scrollSnapEl.value)
-    Array.from(scrollSnapEl.value.children).forEach(child => resizeObserver?.observe(child))
+    const children = getScrollableChildren(scrollSnapEl.value)
+    children.forEach(child => {
+      resizeObserver?.observe(child)
+    })
+    
+    if (children.length === 0) {
+      setTimeout(() => {
+        if (scrollSnapEl.value) {
+          const delayedChildren = getScrollableChildren(scrollSnapEl.value)
+          delayedChildren.forEach(child => {
+            resizeObserver?.observe(child)
+          })
+          updateSnapAlignments()
+          updateActiveItem()
+        }
+      }, 100)
+    }
+  } catch (error) {
+    console.error('ResizeObserver setup failed:', error)
   }
 
   let ticking = false
@@ -200,47 +259,74 @@ function setupObserver() {
     }
   }
 
-  scrollSnapEl.value?.addEventListener('scroll', scrollHandler, { passive: true })
-  
-  // Handle resize for both alignments and active item calculation
-  // Window resize is separate from element resize (which ResizeObserver handles)
-  // but good to keep for viewport changes
-  window.addEventListener('resize', () => {
+  try {
+    scrollSnapEl.value.addEventListener('scroll', scrollHandler, { passive: true })
+  } catch (error) {
+    console.error('Scroll event listener setup failed:', error)
+  }
+
+  windowResizeHandler = debounce(() => {
     updateSnapAlignments()
     scrollHandler?.()
-  })
+  }, 150)
+
+  try {
+    window.addEventListener('resize', windowResizeHandler)
+  } catch (error) {
+    console.error('Resize event listener setup failed:', error)
+  }
   
-  // Initial check
   updateActiveItem()
   updateSnapPause()
 }
 
-function cleanupObserver() {
-  if (scrollSnapEl.value && scrollHandler) {
+function cleanupObserver(): void {
+  if (!scrollSnapEl.value) return
+
+  if (scrollHandler) {
     scrollSnapEl.value.removeEventListener('scroll', scrollHandler)
+    scrollHandler = null
   }
-  scrollSnapEl.value?.classList.remove('scroll-snap--paused')
-  window.removeEventListener('resize', scrollHandler as EventListener)
+
+  if (windowResizeHandler) {
+    try {
+      window.removeEventListener('resize', windowResizeHandler)
+      windowResizeHandler = null
+    } catch (error) {
+      console.error('Failed to remove resize listener:', error)
+    }
+  }
+
+  scrollSnapEl.value.classList.remove(CONFIG.CLASS_NAMES.SNAP_PAUSED)
+
   if (resizeObserver) {
-    resizeObserver.disconnect()
+    try {
+      resizeObserver.disconnect()
+    } catch (error) {
+      console.error('Failed to disconnect ResizeObserver:', error)
+    }
     resizeObserver = null
   }
-  scrollHandler = null
 }
 
-// Re-run observer attachment when children might have changed or component updates
-// Simple way: re-attach on mounted/updated hooks if needed, but for static lists mounted is ok.
-// If the slot content is dynamic, we might need a MutationObserver or a watcher.
-// For now, we'll assume the list is stable or re-renders trigger updates.
-
 onMounted(async () => {
-  if (typeof window !== 'undefined') {
+  if (typeof window === 'undefined') return
+
+  try {
     mql = window.matchMedia(`(min-width: ${props.mdBreakpointPx}px)`)
     isMdUp.value = mql.matches
+    
     mqlHandler = (e) => {
       isMdUp.value = e.matches
     }
-    mql.addEventListener?.('change', mqlHandler) ?? mql.addListener(mqlHandler)
+    
+    if (mql.addEventListener) {
+      mql.addEventListener('change', mqlHandler)
+    } else if (mql.addListener) {
+      mql.addListener(mqlHandler)
+    }
+  } catch (error) {
+    console.error('Media query setup failed:', error)
   }
 
   await nextTick()
@@ -249,21 +335,37 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   cleanupObserver()
+  
   if (mql && mqlHandler) {
-    mql.removeEventListener?.('change', mqlHandler) ?? mql.removeListener(mqlHandler)
+    if (mql.removeEventListener) {
+      mql.removeEventListener('change', mqlHandler)
+    } else if (mql.removeListener) {
+      mql.removeListener(mqlHandler)
+    }
   }
 })
 
-// If snapping toggles, we might want to refresh the observer or active states
 watch(scaleEnabled, async (enabled) => {
   if (enabled) {
     await nextTick()
     setupObserver()
   } else {
     cleanupObserver()
-    // Clear active classes
     if (scrollSnapEl.value) {
-      Array.from(scrollSnapEl.value.children).forEach(c => c.classList.remove('scroll-snap__item--active'))
+      getScrollableChildren(scrollSnapEl.value).forEach(c => {
+        c.classList.remove(CONFIG.CLASS_NAMES.SNAP_ITEM_ACTIVE)
+      })
+    }
+  }
+})
+
+watch(() => scrollSnapEl.value?.children.length, async (newCount, oldCount) => {
+  if (newCount !== undefined && oldCount !== undefined && newCount !== oldCount) {
+    childrenCount.value = newCount
+    if (resizeObserver) {
+      cleanupObserver()
+      await nextTick()
+      setupObserver()
     }
   }
 })
@@ -274,9 +376,9 @@ watch(scaleEnabled, async (enabled) => {
     ref="scrollSnapEl"
     v-bind="$attrs"
     :class="[
-      'scroll-snap',
-      snapEnabled ? 'scroll-snap--enabled' : 'scroll-snap--disabled',
-      scaleEnabled ? 'scroll-snap--scale' : 'scroll-snap--scale-disabled',
+      CONFIG.CLASS_NAMES.SCROLL_SNAP,
+      snapEnabled ? CONFIG.CLASS_NAMES.SNAP_ENABLED : CONFIG.CLASS_NAMES.SNAP_DISABLED,
+      scaleEnabled ? CONFIG.CLASS_NAMES.SNAP_SCALE : CONFIG.CLASS_NAMES.SNAP_SCALE_DISABLED,
     ]"
   >
     <slot />
@@ -287,17 +389,13 @@ watch(scaleEnabled, async (enabled) => {
 .scroll-snap {
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  /* Ensure the container itself can scroll */
   overflow-y: auto;
   overflow-x: hidden;
-  /* Ensure offsetTop calculations are relative to this container */
   position: relative;
-  /* Improve touch handling */
   touch-action: pan-y;
 }
 
 .scroll-snap--enabled {
-  /* Native CSS Scroll Snap */
   scroll-snap-type: y mandatory;
 }
 
@@ -305,14 +403,8 @@ watch(scaleEnabled, async (enabled) => {
   scroll-snap-type: none !important;
 }
 
-/* 
-  Deep selector to target slot content (the items).
-  Using :deep() or just child selector depending on scoped vs global.
-  Since we are in scoped style, we need ::v-deep or :deep() for slotted content in Vue 3.
-*/
 .scroll-snap--enabled :deep(> *) {
   scroll-snap-align: center;
-  /* Crucial for 'one gesture per item' feel */
   scroll-snap-stop: always;
 }
 
@@ -320,21 +412,17 @@ watch(scaleEnabled, async (enabled) => {
   scroll-snap-type: none;
 }
 
-/* Scaling effects tracked by IntersectionObserver class */
 .scroll-snap--scale::after {
   content: '';
   display: block;
   min-height: 50vh;
-  /* Ensure it takes up space in flex container */
-  flex: 0 0 50vh; 
+  flex: 0 0 50vh;
 }
 
 .scroll-snap--scale :deep(> *) {
   transform: scale(0.9);
   opacity: 0.3;
   transition: transform 300ms cubic-bezier(0.25, 0.1, 0.25, 1.0), opacity 300ms cubic-bezier(0.25, 0.1, 0.25, 1.0);
-  /* Ensure items have block layout for proper spacing/snapping */
-  /* display: block;  */
 }
 
 .scroll-snap--scale :deep(> .snap-align-start) {

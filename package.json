@@ -20,7 +20,7 @@
     "lucide-vue-next": "^0.562.0",
     "motion-v": "^1.9.0",
     "nuxt": "^4.2.2",
-    "shaders": "^2.2.46",
+    "shaders": "^2.2.48",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.6.3",
