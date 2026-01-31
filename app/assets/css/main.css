@@ -3,13 +3,21 @@
 
 @custom-variant dark (&:is(.dark *));
 
+
+.h-screen {
+  /* dvh accounts for iOS safari safe area */
+  min-height: 100dvh !important;
+  /* if dvh is not supported, use 100vh */
+  @supports (height: 100dvh) {
+    height: 100dvh !important;
+  }
+}
+
 html, body {
   @apply w-screen h-screen overflow-hidden;
   background-color: #000;
   color: #fff;
 }
-
-
 
 /* Crossing pattern gray background */
 .bg-crossing {

@@ -140,11 +140,32 @@ function getHoverMetadata(x: number, y: number): HoverMetadata {
   let variant: string | null = null;
   let object: CursorObject | null = null;
 
+  const isSemanticClickable = (node: Element) => {
+    const tag = node.tagName.toLowerCase();
+    if (tag === "button") return true;
+    if (tag === "a" && (node as HTMLAnchorElement).hasAttribute("href")) return true;
+    if (tag === "input") {
+      const type = (node as HTMLInputElement).type;
+      return ["button", "submit", "reset", "checkbox", "radio", "file"].includes(type);
+    }
+    if (tag === "select" || tag === "textarea") return true;
+
+    const role = node.getAttribute("role");
+    if (role === "button" || role === "link" || role === "checkbox" || role === "radio") {
+      return true;
+    }
+
+    if (node.hasAttribute("onclick") || node.hasAttribute("data-cursor-clickable")) {
+      return true;
+    }
+
+    return false;
+  };
+
   for (let node: Element | null = el; node; node = node.parentElement) {
     if (node === document.body) break;
 
-    const style = window.getComputedStyle(node);
-    if (style.cursor === "pointer") isClickable = true;
+    if (isSemanticClickable(node)) isClickable = true;
 
     const v = node.getAttribute("data-cursor-variant");
     if (v && !variant) variant = v;
@@ -194,6 +215,15 @@ function updateRotation(speed: number) {
   previousAngle.value = currentAngle;
 }
 
+function refreshHoverState() {
+  const { x, y } = lastMousePos.value;
+  const meta = getHoverMetadata(x, y);
+  isHoveringClickable.value = meta.isClickable;
+  cursorVariant.value = meta.variant;
+  cursorObject.value = meta.object;
+  updateScale();
+}
+
 function smoothMouseMove(e: MouseEvent) {
   const currentPos = { x: e.clientX, y: e.clientY };
   updateVelocity(currentPos);
@@ -238,6 +268,7 @@ function throttledMouseMove(e: MouseEvent) {
 
 document.body.style.cursor = "none";
 useEventListener(window, "mousemove", throttledMouseMove);
+useEventListener(window, "scroll", refreshHoverState, { passive: true, capture: true });
 useEventListener(window, "mousedown", () => {
   isPressing.value = true;
   updateScale();
@@ -269,7 +300,7 @@ defineExpose({
 <template>
   <Motion
     as="div"
-    class="fixed w-0 h-0 pointer-events-none will-change-transform z-[100]"
+    class="fixed w-0 h-0 pointer-events-none will-change-transform z-[100] md:block hidden"
     :style="{
       left: cursorX,
       top: cursorY,

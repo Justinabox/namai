@@ -14,7 +14,6 @@ import {
   Swirl,
   FilmGrain
 } from 'shaders/vue'
-import SparklesText from '/components/ui/sparkles-text/SparklesText.vue'
 
 const dotGridDensity = ref(0)
 
@@ -33,7 +32,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-<div class="w-screen h-screen max-h-screen overflow-clip flex flex-col">
+<div class="w-screen grow min-h-0 overflow-clip flex flex-col">
     <div class="w-full h-full absolute top-0 left-0 select-none pointer-events-none">
       <!-- SSR does not correctly render DotGrid density -->
       <ClientOnly>
@@ -60,20 +59,6 @@ onBeforeUnmount(() => {
           </Group>
         </Shader>
       </ClientOnly>
-    </div>
-
-    <div class="w-full h-fit py-6 px-16 flex justify-between">
-      <a class="text-3xl font-pixelify-sans">Justzhu</a>
-      <!-- <SparklesText
-        text="Justzhu"
-        :colors="{ first: '#9E7AFF', second: '#FE8BBB' }"
-        :sparkles-count="3"
-        class="text-3xl! font-pixelify-sans"
-      /> -->
-      <div class="flex gap-12">
-        <NuxtLink to="/about" class="text-3xl font-pixelify-sans hover:text-neutral-600 duration-200">[About]</NuxtLink>
-        <NuxtLink to="/projects" class="text-3xl font-pixelify-sans hover:text-neutral-600 duration-200">[Projects]</NuxtLink>
-      </div>
     </div>
 
     <!-- <Shader
@@ -174,7 +159,7 @@ onBeforeUnmount(() => {
         :visible="true"/>
     </Shader>
 
-    <div class="w-full h-fit py-6 px-16 flex justify-end">
+    <div class="w-full h-fit py-6 px-4 md:px-16 flex justify-end">
       <!-- on mouse: and love -->
       <a class="text-3xl font-pixelify-sans text-neutral-800">peace amidst chaos</a>
     </div>

@@ -52,9 +52,15 @@ let resizeObserver: ResizeObserver | null = null
 let windowResizeHandler: (() => void) | null = null
 
 function getScrollableChildren(container: HTMLElement): HTMLElement[] {
-  return Array.from(container.children).filter(
-    el => el.tagName !== 'STYLE' && el.tagName !== 'SCRIPT'
-  ) as HTMLElement[]
+  return Array.from(container.children).filter(el => {
+    const element = el as HTMLElement
+    if (element.tagName === 'STYLE' || element.tagName === 'SCRIPT') return false
+    if (typeof window === 'undefined') return true
+    const style = window.getComputedStyle(element)
+    if (style.display === 'none' || style.visibility === 'hidden') return false
+    if (element.offsetHeight === 0 || element.offsetWidth === 0) return false
+    return true
+  }) as HTMLElement[]
 }
 
 function handleTopPosition(container: HTMLElement, children: HTMLElement[]): boolean {
@@ -170,6 +176,48 @@ function updateSnapAlignments(): void {
   children.forEach(child => {
     updateChildSnapAlignments(child, viewportHeight, halfViewport)
   })
+
+  updateEndGap(container, children, viewportHeight)
+}
+
+function getEffectiveChildHeight(child: HTMLElement): number {
+  if (typeof window === 'undefined') return child.offsetHeight
+  const styles = window.getComputedStyle(child)
+  const marginBottom = Number.parseFloat(styles.marginBottom || '0')
+  return child.offsetHeight + (Number.isNaN(marginBottom) ? 0 : marginBottom)
+}
+
+function updateEndGap(
+  container: HTMLElement,
+  children: HTMLElement[],
+  viewportHeight: number
+): void {
+  if (!scaleEnabled.value) {
+    container.style.setProperty('--scroll-snap-end-gap', '0px')
+    return
+  }
+
+  if (children.length === 0 || viewportHeight <= 0) {
+    container.style.setProperty('--scroll-snap-end-gap', '0px')
+    return
+  }
+
+  const lastChild = children.at(-1)
+  if (!lastChild) {
+    container.style.setProperty('--scroll-snap-end-gap', '0px')
+    return
+  }
+  const isOversize = lastChild.classList.contains(CONFIG.CLASS_NAMES.SNAP_OVERSIZE)
+  const isAlignStart = lastChild.classList.contains(CONFIG.CLASS_NAMES.SNAP_ALIGN_START)
+
+  if (isOversize || isAlignStart) {
+    container.style.setProperty('--scroll-snap-end-gap', '0px')
+    return
+  }
+
+  const effectiveHeight = getEffectiveChildHeight(lastChild)
+  const gap = Math.max(0, (viewportHeight - effectiveHeight) / 2)
+  container.style.setProperty('--scroll-snap-end-gap', `${gap}px`)
 }
 
 function findOversizeInViewTop(
@@ -352,6 +400,9 @@ watch(scaleEnabled, async (enabled) => {
   } else {
     cleanupObserver()
     if (scrollSnapEl.value) {
+      scrollSnapEl.value.style.setProperty('--scroll-snap-end-gap', '0px')
+    }
+    if (scrollSnapEl.value) {
       getScrollableChildren(scrollSnapEl.value).forEach(c => {
         c.classList.remove(CONFIG.CLASS_NAMES.SNAP_ITEM_ACTIVE)
       })
@@ -395,6 +446,13 @@ watch(() => scrollSnapEl.value?.children.length, async (newCount, oldCount) => {
   touch-action: pan-y;
 }
 
+.scroll-snap::after {
+  content: '';
+  display: block;
+  min-height: calc(var(--scroll-snap-end-gap, 0px) + 15vh);
+  flex: 0 0 calc(var(--scroll-snap-end-gap, 0px) + 15vh);
+}
+
 .scroll-snap--enabled {
   scroll-snap-type: y mandatory;
 }
@@ -412,12 +470,6 @@ watch(() => scrollSnapEl.value?.children.length, async (newCount, oldCount) => {
   scroll-snap-type: none;
 }
 
-.scroll-snap--scale::after {
-  content: '';
-  display: block;
-  min-height: 50vh;
-  flex: 0 0 50vh;
-}
 
 .scroll-snap--scale :deep(> *) {
   transform: scale(0.9);

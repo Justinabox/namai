@@ -172,7 +172,7 @@ if (import.meta.env.DEV && errors.value.length > 0) {
             <!-- <NuxtPicture v-else provider="cloudflare" :src="project.cover" :alt="project.title" class="rounded-sm object-contain w-full h-auto sm:max-h-[80vh]" loading="lazy" preload/> -->
           </div>
           <figcaption class="p-3">
-            <p class="text-lg font-pixelify-sans text-neutral-100">{{ item.title }}</p>
+            <p class="text-xl font-pixelify-sans text-neutral-100">{{ item.title }}</p>
             <p v-if="item.description" class="text-sm text-neutral-500">{{ item.description }}</p>
           </figcaption>
         </figure>
