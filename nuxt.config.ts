@@ -11,6 +11,18 @@ export default defineNuxtConfig({
       { name: 'Pixelify Sans', provider: 'google' }
     ]
   },
+  app: {
+    // pageTransition: { name: 'page', mode: 'out-in' },
+    // layoutTransition: { name: 'layout', mode: 'out-in' },
+  },
+  image: {
+    quality: 85,
+    format: ['webp', 'avif', 'jpg'],
+    cloudflare: {
+      baseURL: 'https://cdn.justzhu.com',
+    },
+    domains: ['cdn.justzhu.com'],
+  },
   vite: {
     plugins: [
       tailwindcss(),

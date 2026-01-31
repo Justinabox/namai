@@ -9,6 +9,14 @@ html, body {
   color: #fff;
 }
 
+
+
+/* Crossing pattern gray background */
+.bg-crossing {
+  background-image: repeating-linear-gradient(315deg,var(--color-neutral-800)0,var(--color-neutral-800)1px,transparent 0,transparent 50%);
+  background-size: 10px 10px;
+}
+
 @theme {
     --font-pixelify-sans: "Pixelify Sans", "sans-serif";
 

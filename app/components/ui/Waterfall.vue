@@ -158,8 +158,9 @@ if (import.meta.env.DEV && errors.value.length > 0) {
     >
       <slot name="item" :item="item" :index="index">
         <figure class="rounded-md border-2 border-neutral-800 bg-neutral-950/40 overflow-hidden group">
-          <div class="w-full" :style="{ aspectRatio: getAspectRatio(item) }">
-            <NuxtImg
+          <div class="w-full bg-crossing" :style="{ aspectRatio: getAspectRatio(item) }">
+            <NuxtPicture
+              provider="cloudflare"
               :src="item.cover"
               :alt="item.title"
               :width="getImageWidth(item)"
@@ -168,6 +169,7 @@ if (import.meta.env.DEV && errors.value.length > 0) {
               class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
               loading="lazy"
             />
+            <!-- <NuxtPicture v-else provider="cloudflare" :src="project.cover" :alt="project.title" class="rounded-sm object-contain w-full h-auto sm:max-h-[80vh]" loading="lazy" preload/> -->
           </div>
           <figcaption class="p-3">
             <p class="text-lg font-pixelify-sans text-neutral-100">{{ item.title }}</p>

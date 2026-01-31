@@ -15,7 +15,7 @@ export default defineContentConfig({
         year: z.number(),
         tags: z.array(z.string()),
         weight: z.number().default(999),
-        type: z.enum(['portrait', 'landscape']),
+        type: z.enum(['video', 'image']),
       })
     }),
     playgrounds: defineCollection({

@@ -1,6 +1,7 @@
 <script setup>
 import SparklesText from '/components/ui/sparkles-text/SparklesText.vue'
 import ScrollSnap from '/components/ui/ScrollSnap.vue'
+import DashVideo from '/components/ui/DashVideo.vue'
 import Waterfall from '/components/ui/Waterfall.vue'
 import { PROJECT_CATEGORIES } from '/lib/constants'
 
@@ -55,6 +56,15 @@ const categoryCounts = computed(() => {
 const scrollSnapKey = computed(() => selectedCategory.value ? `category-${selectedCategory.value}` : 'all')
 
 const scrollSnapRef = ref(null)
+
+const loadedProjectCovers = ref({})
+
+const markCoverLoaded = (id) => {
+  loadedProjectCovers.value = {
+    ...loadedProjectCovers.value,
+    [id]: true,
+  }
+}
 
 watch(selectedCategory, async () => {
   scrollToTop()
@@ -182,21 +192,34 @@ onMounted(() => {
                 v-else
                 ref="scrollSnapRef"
                 :key="scrollSnapKey"
-                class="flex-1 min-h-0 px-4 gap-2 lg:gap-4 lg:px-8 my-4 flex flex-col"
+                class="flex-1 min-h-0 px-4 gap-2 lg:gap-4 lg:px-8 my-4 flex flex-col scrollbar-hide"
                 :disable-snap-below-md="true"
             >
-                <NuxtLink :to="project.path" v-for="project in filteredProjects" :key="project.id" :class="[
-                    'rounded-md',
-                    project.type === 'landscape' ? 'w-full' : 'h-full w-fit'
-                ]">
-                    <video v-if="project.cover.endsWith('.mp4')" :src="project.cover" :alt="project.title" :class="[
-                        'rounded-md object-contain border-2 border-neutral-800',
-                        project.type === 'landscape' ? 'w-full sm:max-h-[80vh]' : 'h-[70vh] w-fit'
-                    ]" autoplay muted loop></video>
-                    <NuxtImg v-else :src="project.cover" :alt="project.title" :class="[
-                        'rounded-md object-contain border-2 border-neutral-800',
-                        project.type === 'landscape' ? 'w-full h-auto sm:max-h-[80vh]' : 'h-[70vh] w-auto max-w-full'
-                    ]" loading="lazy" />
+                <NuxtLink :to="project.path" v-for="project in filteredProjects" :key="project.id" class="rounded-md w-full h-auto sm:max-h-[80vh] border-2 border-neutral-800">
+                    <DashVideo
+                      v-if="project.type === 'video'"
+                      :src="project.cover"
+                      placeholder-ratio="16:9"
+                      autoplay
+                      muted
+                      loop
+                      playsinline
+                      preload="metadata"
+                      class="w-full h-full pointer-events-none object-cover rounded-sm"
+                    />
+                    <NuxtPicture
+                      v-else
+                      provider="cloudflare"
+                      :src="project.cover"
+                      :alt="project.title"
+                      :class="[
+                        'project-cover rounded-sm object-cover w-full h-auto sm:max-h-[80vh]',
+                        { 'aspect-16/9 bg-crossing': !loadedProjectCovers[project.id] },
+                      ]"
+                      :img-attrs="{ onLoad: () => markCoverLoaded(project.id) }"
+                      loading="lazy"
+                      preload
+                    />
                 </NuxtLink>
 
                 <Waterfall
@@ -209,3 +232,18 @@ onMounted(() => {
         </div>
     </div>
 </template>
+
+<style scoped>
+:deep(picture.project-cover) {
+  display: block;
+  width: 100%;
+}
+
+:deep(picture.project-cover img) {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: 6px;
+}
+</style>
