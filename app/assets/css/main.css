@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -164,5 +165,21 @@ html, body {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+.scroll-snap {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  touch-action: pan-y;
+}
+
+.scroll-snap::after {
+  content: '';
+  display: block;
+  min-height: calc(var(--scroll-snap-end-gap, 0px) + 15vh);
+  flex: 0 0 calc(var(--scroll-snap-end-gap, 0px) + 15vh);
 }
   

@@ -62,8 +62,10 @@ function getAnimate() {
       :while-in-view="getAnimate()"
       :transition="{
         duration: props.duration,
-        easing: 'easeInOut',
-        delay: props.delay * index,
+        type: 'spring',
+        stiffness: 30,
+        damping: 10,
+        delay: props.delay * (index as number),
       }"
     >
       <component :is="child" />

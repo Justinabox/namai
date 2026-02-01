@@ -1,9 +1,8 @@
 <script setup>
-import ScrollSnap from '/components/ui/ScrollSnap.vue'
-import DashVideo from '/components/ui/DashVideo.vue'
+import ScrollSnap from '/components/ui/scroll-snap'
+import DashVideo from '/components/global/DashVideo.vue'
 import Waterfall from '/components/ui/Waterfall.vue'
 import { PROJECT_CATEGORIES } from '/lib/constants'
-import { Icon } from '@iconify/vue'
 
 const { data: allProjects, pending: projectsPending, error: projectsError } = await useAsyncData(
   'all-projects',
@@ -23,10 +22,12 @@ const scrollContainer = ref(null)
 
 const selectedCategory = useState('selectedCategory', () => null)
 
-const scrollToTop = () => {
+const scrollToTop = (behavior = 'auto') => {
   if (scrollContainer.value) {
-    scrollContainer.value.scrollTo({ top: 0, behavior: 'smooth' })
+    scrollContainer.value.scrollTo({ top: 0, behavior })
   }
+  scrollSnapRef.value?.scrollToTop({ top: 0, behavior })
+  scrollSnapRef.value?.resetActive()
 }
 
 const isFiltering = computed(() => selectedCategory.value !== null)
@@ -53,8 +54,6 @@ const categoryCounts = computed(() => {
   return counts
 })
 
-const scrollSnapKey = computed(() => selectedCategory.value ? `category-${selectedCategory.value}` : 'all')
-
 const scrollSnapRef = ref(null)
 
 const loadedProjectCovers = ref({})
@@ -67,11 +66,8 @@ const markCoverLoaded = (id) => {
 }
 
 watch(selectedCategory, async () => {
-  scrollToTop()
   await nextTick()
-  if (scrollSnapRef.value && scrollSnapRef.value.$el) {
-    scrollSnapRef.value.$el.scrollTop = 0
-  }
+  scrollToTop('auto')
 }, { flush: 'post' })
 
 const selectCategory = (category) => {
@@ -184,7 +180,7 @@ onMounted(() => {
         </div>
 
         <!-- Main content -->
-        <ScrollSnap v-else ref="scrollSnapRef" :key="scrollSnapKey"
+        <ScrollSnap v-else ref="scrollSnapRef"
           class="flex-1 min-h-0 px-4 gap-4 lg:px-8 flex flex-col scrollbar-hide"
           :disable-snap-below-md="true">
 
@@ -192,12 +188,15 @@ onMounted(() => {
             :to="project.path"
             v-for="project in filteredProjects"
             :key="project.id"
-            data-cursor-variant="descriptive"
-            :data-cursor-object="JSON.stringify({
-              title: project.title,
-              descp: project.description,
-              icon: 'iconamoon:arrow-top-right-1-bold',
-            })"
+            v-cursor="{
+              clickable: true,
+              variant: 'descriptive',
+              object: {
+                title: project.title,
+                descp: project.description,
+                icon: 'iconamoon:arrow-top-right-1-bold',
+              },
+            }"
             class="rounded-md w-full h-auto sm:max-h-[80vh] border-2 border-neutral-800"
           >
             <DashVideo v-if="project.type === 'video'" :src="project.cover" placeholder-ratio="16:9" autoplay muted loop

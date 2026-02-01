@@ -1,0 +1,1 @@
+export { default } from "./ScrollSnap.vue";

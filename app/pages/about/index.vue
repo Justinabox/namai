@@ -1,5 +1,5 @@
 <script setup>
-import BlurReveal from '/components/ui/blur-reveal/BlurReveal.vue'
+import BlurReveal from '/components/ui/BlurReveal.vue'
 import Avatar from '/components/ui/Avatar.vue'
 import { Motion } from 'motion-v'
 </script>
@@ -11,8 +11,8 @@ import { Motion } from 'motion-v'
     <div class="flex items-center gap-2">
       <h1 class="text-8xl font-pixelify-sans">Hi,</h1>
       <Motion as="div" drag dragSnapToOrigin class="z-1" :initial="{ scale: 0.1 }" :animate="{ scale: 1 }"
-        :hover="{ scale: 1.05 }" :whileDrag="{ scale: 0.95 }" :whilePress="{ scale: 0.95 }"
-        :transition="{ duration: 1, type: 'spring', damping: 10, stiffness: 100 }">
+        v-cursor="{ clickable: true }" :hover="{ scale: 1.05 }" :whileDrag="{ scale: 0.95 }"
+        :whilePress="{ scale: 0.95 }" :transition="{ duration: 1, type: 'spring', damping: 10, stiffness: 100 }">
         <Avatar class="w-16 h-16" />
       </Motion>
     </div>
