@@ -8,8 +8,9 @@ export default defineNuxtConfig({
   css: ['./app/assets/css/main.css'],
   fonts: {
     families: [
-      { name: 'Pixelify Sans', provider: 'google' }
-    ]
+      { name: 'Pixelify Sans', provider: 'local'},
+      { name: 'Yrsa', provider: 'google'}
+    ],
   },
   app: {
     // pageTransition: { name: 'page', mode: 'out-in' },

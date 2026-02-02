@@ -148,6 +148,8 @@ onMounted(() => {
             </span>
           </div>
         </div>
+
+        <a class="text-neutral-400 text-md">Made with ❤️ by Justin</a>
       </div>
 
       <ClientOnly>

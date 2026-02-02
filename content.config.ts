@@ -10,12 +10,28 @@ export default defineContentConfig({
       schema: z.object({
         title: z.string(),
         description: z.string(),
-        cover: z.string().url(),
-        category: z.enum(PROJECT_CATEGORIES),
+        scope: z.string(),
+        techstack: z.array(z.string()),
+        roles: z.array(z.string()),
+        team: z.array(z.object({
+          name: z.string(),
+          role: z.string(),
+          link: z.string().url(),
+        })),
+        time: z.string(),
         year: z.number(),
-        tags: z.array(z.string()),
+
         weight: z.number().default(999),
+        cover: z.string().url(),
         type: z.enum(['video', 'image']),
+        page: z.enum(['case-study', 'gallery', 'external']),
+        external: z.string().url().optional(),
+        tags: z.array(z.string()),
+        category: z.enum(PROJECT_CATEGORIES),
+        links: z.array(z.object({
+          name: z.string(),
+          url: z.string().url(),
+        })).default([]),
       })
     }),
     playgrounds: defineCollection({
