@@ -14,6 +14,9 @@ page: 'gallery'
 tags: ['3D', 'Drone', 'Automation', 'DevOps']
 category: 'Creative'
 
+height: 1650
+width: 2764
+
 links:
  - { name: 'Model', url: 'https://odm.korgo.net/public/task/687c20ab-01de-4e4a-b450-d9c5d826f3b4/3d/' }
  - { name: 'Orthophoto', url: 'https://odm.korgo.net/public/task/687c20ab-01de-4e4a-b450-d9c5d826f3b4/map/?t=orthophoto' }

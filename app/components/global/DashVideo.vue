@@ -23,6 +23,7 @@ let player = null
 const isLoaded = ref(false)
 let visibilityObserver = null
 const autoPaused = ref(false)
+const userPaused = ref(false)
 const visibilityThreshold = 0.5
 
 const normalizedPlaceholderRatio = computed(() => {
@@ -52,7 +53,7 @@ const initPlayer = async () => {
         fastSwitchEnabled: true,
       },
       abr: {
-        initialBitrate: {audio: -1, video: 500}
+        maxBitrate: {audio: -1, video: 5000}
       }
     }
   })
@@ -70,6 +71,7 @@ const pausePlayback = () => {
 
 const resumePlayback = () => {
   if (!videoRef.value) return
+  if (!props.autoplay || userPaused.value) return
   if (player) {
     player.play()
   } else {
@@ -117,10 +119,11 @@ const setupVisibilityObserver = () => {
     (entries) => {
       const entry = entries[0]
       if (!entry) return
+      if (!props.autoplay) return
       const ratio = entry.intersectionRatio
       if (ratio < visibilityThreshold) {
         if (!autoPaused.value) pausePlayback()
-      } else if (autoPaused.value) {
+      } else if (autoPaused.value && props.autoplay && !userPaused.value) {
         resumePlayback()
       }
     },
@@ -146,6 +149,7 @@ watch(
     }
     isLoaded.value = false
     autoPaused.value = false
+    userPaused.value = false
     await initPlayer()
     applyInitialVisibility()
   }
@@ -163,6 +167,15 @@ onBeforeUnmount(() => {
 const handleVideoLoaded = () => {
   isLoaded.value = true
 }
+
+const handleVideoPause = () => {
+  if (autoPaused.value) return
+  userPaused.value = true
+}
+
+const handleVideoPlay = () => {
+  userPaused.value = false
+}
 </script>
 
 <template>
@@ -177,6 +190,8 @@ const handleVideoLoaded = () => {
       :autoplay="autoplay"
       :class="isLoaded ? 'w-full h-auto' : 'w-full h-full'"
       @loadedmetadata="handleVideoLoaded"
+      @pause="handleVideoPause"
+      @play="handleVideoPlay"
     />
   </div>
 </template>

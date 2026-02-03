@@ -19,3 +19,22 @@ links:
 ---
 
 
+::Masonry
+---
+items:
+ - { cover: 'https://customer-3c2ziqxt3fiyfydw.cloudflarestream.com/46ba929660250adfceb8b66b1133655d/manifest/video.mpd', width: 2646, height: 1742, type: 'video' }
+ - { cover: 'https://customer-3c2ziqxt3fiyfydw.cloudflarestream.com/e5f7f3cda3359755a2247943e05b6998/manifest/video.mpd', width: 3840, height: 2160, type: 'video' }
+ - { cover: 'https://customer-3c2ziqxt3fiyfydw.cloudflarestream.com/5c30042389cbe438c0cac5e3d16071e8/manifest/video.mpd', width: 3840, height: 2160, type: 'video' }
+ - { cover: 'https://customer-3c2ziqxt3fiyfydw.cloudflarestream.com/f7ec1e7f69315f26fc3fc74420fe09b7/manifest/video.mpd', width: 3840, height: 2160, type: 'video' }
+ - { cover: 'https://cdn.justzhu.com/prod/projects/candyscope/gallery/1770098423_979.jpeg', width: 2878, height: 2052 }
+ - { cover: 'https://cdn.justzhu.com/prod/projects/candyscope/gallery/1770098423.jpeg', width: 3456, height: 2160}
+ - { cover: 'https://cdn.justzhu.com/prod/projects/candyscope/gallery/1770098423_671.jpeg', width: 2764, height: 524 }
+ - { cover: 'https://cdn.justzhu.com/prod/projects/candyscope/gallery/1770098423_684.jpeg', width: 3840, height: 2160 }
+ - { cover: 'https://cdn.justzhu.com/prod/projects/candyscope/gallery/1770098423_735.jpeg', width: 2898, height: 1190 }
+ - { cover: 'https://cdn.justzhu.com/prod/projects/candyscope/gallery/1770098423_762.jpeg', width: 3840, height: 2160 }
+ - { cover: 'https://cdn.justzhu.com/prod/projects/candyscope/gallery/1770098423_847.jpeg', width: 3456, height: 2160 }
+ - { cover: 'https://cdn.justzhu.com/prod/projects/candyscope/gallery/1770098423_891.jpeg', width: 3840, height: 2160 }
+ - { cover: 'https://cdn.justzhu.com/prod/projects/candyscope/gallery/1770098423_938.jpeg', width: 3840, height: 2160 }
+ - { cover: 'https://cdn.justzhu.com/prod/projects/candyscope/gallery/1770098424.jpeg', width: 3456, height: 2160 }
+---
+::

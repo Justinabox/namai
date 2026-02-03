@@ -14,10 +14,16 @@ if (!project.value) {
 </script>
 
 <template>
-  <div class="h-full w-full overflow-y-auto">
+  <div class="h-full w-full overflow-y-auto overflow-x-hidden">
     <div class="w-full flex flex-row gap-8 px-8 lg:px-16 xl:px-20 justify-between py-8">
+      <!-- Gallery -->
+      <div v-if="project?.page === 'gallery'" class="grow min-w-0">
+        <ContentRenderer :value="project ?? {}" />
+      </div>
+
+      <!-- Case study -->
       <!-- Left sidebar -->
-      <aside class="sticky top-0 h-full 2xl:w-[300px] mr-4 xl:mr-8 shrink-0 text-neutral-600 text-3xl xl:text-4xl 2xl:text-5xl font-pixelify-sans hidden sm:block">
+      <aside v-if="project?.page === 'case-study'" class="sticky top-0 h-full 2xl:w-[300px] mr-4 xl:mr-8 shrink-0 text-neutral-600 text-3xl xl:text-4xl 2xl:text-5xl font-pixelify-sans hidden sm:block">
         <a class="flex flex-row items-center gap-2 text-neutral-600 pb-6">{{ project?.title }}</a>
         <a class="flex flex-row items-center gap-2">· Intro</a>
         <a class="flex flex-row items-center gap-2 text-neutral-200">· Problem</a>
@@ -30,7 +36,7 @@ if (!project.value) {
       </aside>
 
       <!-- Main content -->
-      <div class="flex min-w-0 flex-1 flex-col max-w-[864px]">
+      <div v-if="project?.page === 'case-study'" class="flex min-w-0 flex-1 flex-col max-w-[864px]">
         <ContentRenderer :value="project ?? {}" />
 
         <a class="text-neutral-400 text-xl">Laboris pariatur do eu culpa ipsum velit laboris. Voluptate magna sit
@@ -58,8 +64,11 @@ if (!project.value) {
           elit non labore anim. Occaecat deserunt aliqua duis ad ullamco tempor.</a>
       </div>
 
+      <!-- Project details -->
       <!-- Right sidebar -->
       <aside class="sticky top-0 h-full w-[150px] xl:w-[200px] 2xl:w-[250px] shrink-0 flex-col gap-4 justify-between text-neutral-300 hidden md:flex">
+        
+        <a v-if="project?.page === 'gallery'" class="text-3xl lg:text-4xl 2xl:text-5xl font-pixelify-sans pb-0.5 flex items-center gap-2">{{ project?.title }}</a>
 
         <div class="flex flex-col" v-if="project?.time">
           <a class="text-xl lg:text-2xl 2xl:text-3xl font-pixelify-sans pb-0.5 flex items-center gap-2">

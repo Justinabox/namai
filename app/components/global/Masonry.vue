@@ -8,7 +8,7 @@ const CONFIG = {
   DEFAULT_ASPECT_RATIO: '16 / 9',
   ITEM_KEY_FALLBACKS: ['path', 'id', 'title', 'index'],
   VALIDATION: {
-    REQUIRED_FIELDS: ['title', 'cover', 'width', 'height'] as const,
+    REQUIRED_FIELDS: ['cover', 'width', 'height'] as const,
     MIN_WIDTH_HEIGHT: 1,
   },
 } as const
@@ -16,8 +16,9 @@ const CONFIG = {
 type WaterfallItem = {
   id?: string
   path?: string
-  title: string
+  title?: string
   description?: string
+  type?: 'image' | 'video'
   cover: string
   width: number
   height: number
@@ -73,7 +74,7 @@ function validateItem(item: WaterfallItem, index: number): void {
     errors.value.push({
       item,
       index,
-      message: `Item "${item.title}" has invalid dimensions: ${item.width}x${item.height}`,
+      message: `Item "${index}" has invalid dimensions: ${item.width}x${item.height}`,
     })
   }
 
@@ -81,7 +82,7 @@ function validateItem(item: WaterfallItem, index: number): void {
     errors.value.push({
       item,
       index,
-      message: `Item "${item.title}" has invalid cover URL`,
+      message: `Item "${index}" has invalid cover URL`,
     })
   }
 }
@@ -113,6 +114,10 @@ function getAspectRatio(item: WaterfallItem): string {
   const width = normalizeDimension(item.width)
   const height = normalizeDimension(item.height)
   return `${width} / ${height}`
+}
+
+function getItemType(item: WaterfallItem): 'image' | 'video' {
+  return item.type === 'video' ? 'video' : 'image'
 }
 
 function getImageWidth(item: WaterfallItem): number {
@@ -159,21 +164,31 @@ if (import.meta.env.DEV && errors.value.length > 0) {
       <slot name="item" :item="item" :index="index">
         <figure class="rounded-md border-2 border-neutral-800 bg-neutral-950/40 overflow-hidden group">
           <div class="w-full bg-crossing" :style="{ aspectRatio: getAspectRatio(item) }">
+            <DashVideo
+              v-if="getItemType(item) === 'video'"
+              :src="item.cover"
+              :placeholder-ratio="getAspectRatio(item)"
+              class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+              muted
+              loop
+              playsinline
+            />
             <NuxtPicture
+              v-else
               provider="cloudflare"
               :src="item.cover"
-              :alt="item.title"
+              :alt="(item.title) ? item.title : `Image ${index + 1}`"
               :width="getImageWidth(item)"
               :height="getImageHeight(item)"
-              :aria-label="item.title"
+              :aria-label="(item.title) ? item.title : `Image ${index + 1}`"
               class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
               loading="lazy"
             />
             <!-- <NuxtPicture v-else provider="cloudflare" :src="project.cover" :alt="project.title" class="rounded-sm object-contain w-full h-auto sm:max-h-[80vh]" loading="lazy" preload/> -->
           </div>
-          <figcaption class="p-3">
-            <p class="text-xl font-pixelify-sans text-neutral-100">{{ item.title }}</p>
-            <p v-if="item.description" class="text-sm text-neutral-500">{{ item.description }}</p>
+          <figcaption v-if="item.title || item.description" class="p-3">
+            <p v-if="item.title" class="text-xl font-pixelify-sans text-neutral-100">{{ item.title }}</p>
+            <p v-if="item.description" class="text-sm text-neutral-500 text-wrap">{{ item.description }}</p>
           </figcaption>
         </figure>
       </slot>

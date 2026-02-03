@@ -19,6 +19,9 @@ page: 'gallery'
 tags: ['Mobile', 'Backend']
 category: 'Mobile'
 
+height: 1080
+width: 1920
+
 links:
  - { name: 'Presentation', url: 'https://www.canva.com/design/DAG69V7m1Ek/koY21SQ9Z3w9R9yMSoIOiw/view?utm_content=DAG69V7m1Ek&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h4eae9e8f17' }
 ---

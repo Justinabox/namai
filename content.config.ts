@@ -25,7 +25,7 @@ export default defineContentConfig({
         cover: z.string().url(),
         type: z.enum(['video', 'image']),
         page: z.enum(['case-study', 'gallery', 'external']),
-        external: z.string().url().optional(),
+        external: z.string().url().optional(), // external redirect for the project
         tags: z.array(z.string()),
         category: z.enum(PROJECT_CATEGORIES),
         links: z.array(z.object({

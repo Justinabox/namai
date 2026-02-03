@@ -16,5 +16,7 @@ category: 'Technology'
 
 links:
  - { name: 'Website', url: 'https://coursex.school.rip/' }
+ - { name: 'Github', url: 'https://github.com/Justinabox/CourseX' }
 ---
 
+> How do you visualize a campus size course catalog, each with 8-axis of information, in a user-friendly way?

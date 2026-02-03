@@ -1,7 +1,7 @@
 <script setup>
 import ScrollSnap from '/components/ui/scroll-snap'
 import DashVideo from '/components/global/DashVideo.vue'
-import Waterfall from '/components/ui/Waterfall.vue'
+import Waterfall from '/components/global/Masonry.vue'
 import { PROJECT_CATEGORIES } from '/lib/constants'
 
 const { data: allProjects, pending: projectsPending, error: projectsError } = await useAsyncData(
@@ -149,7 +149,7 @@ onMounted(() => {
           </div>
         </div>
 
-        <a class="text-neutral-400 text-md">Made with ❤️ by Justin</a>
+        <!-- <a class="text-neutral-400 text-md">Made with ❤️ by Justin</a> -->
       </div>
 
       <ClientOnly>
