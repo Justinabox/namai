@@ -1,1 +1,1 @@
-export const PROJECT_CATEGORIES = ['Technology', 'Creative', 'Mobile', 'Art·Design'] as const
+export const PROJECT_CATEGORIES = ['Technology', 'Creative'] as const

@@ -1,6 +1,6 @@
 ---
 title: 'Parse'
-description: 'assistant that help you look over insurance details'
+description: 'assistant that helps you read through insurance details'
 year: 2025
 height: 784
 width: 1280

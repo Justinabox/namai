@@ -1,6 +1,6 @@
 ---
 title: 'Lumin'
-description: 'three.js music visualizer and procedurally generated landscape that brings tranquility'
+description: 'three.js music visualizer over a procedurally generated landscape'
 scope: 'Frontend web application, Three.js midi visualizer, procedurally generated landscape, peace and tranquility'
 techstack: ['Nuxt.js', 'Three.js', 'Spessasynth Lib']
 roles: ['Fullstack Developer', 'Experience Designer']

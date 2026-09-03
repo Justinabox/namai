@@ -1,6 +1,6 @@
 ---
 title: 'The Village'
-description: '2.42cm GSD resolution 3D model of the USC Village, constructed via drone mapping'
+description: '3D model of the USC Village at 2.42 cm GSD, built from drone mapping'
 scope: 'Drone flight route planning and monitoring, self-hosted server deployment and management, data processing, 2.42cm GSD'
 techstack: ['WebODM', 'Dronelink', 'Docker', 'Linux', 'DJI Mini 3 Pro']
 roles: ['Data Processing Engineer', 'DevOps Engineer']

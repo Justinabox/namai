@@ -1,0 +1,30 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+
+  // Static build (`nuxt generate`) served by Cloudflare's asset server.
+  // Top level deploys the main branch to staging; the `release` environment
+  // deploys to the live domain. See the deploy scripts in package.json.
+  "name": "namai",
+  "compatibility_date": "2025-07-15",
+  "assets": {
+    "directory": ".output/public",
+    "not_found_handling": "404-page"
+  },
+  "routes": [
+    { "pattern": "staging.justzhu.com", "custom_domain": true }
+  ],
+
+  "env": {
+    "release": {
+      "name": "namai-release",
+      "assets": {
+        "directory": ".output/public",
+        "not_found_handling": "404-page"
+      },
+      "routes": [
+        { "pattern": "justzhu.com", "custom_domain": true },
+        { "pattern": "www.justzhu.com", "custom_domain": true }
+      ]
+    }
+  }
+}

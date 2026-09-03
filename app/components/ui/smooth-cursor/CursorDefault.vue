@@ -16,6 +16,6 @@ defineProps<{
     :exit="motion?.exit ?? { opacity: 0, scale: 0.9, duration: 0.3 }"
     :transition="motion?.transition ?? { type: 'spring', stiffness: 500, damping: 30 }"
   >
-    <div class="w-8 h-8 rounded-full bg-neutral-500/50 shadow-lg" />
+    <div class="w-8 h-8 rounded-full bg-ink/35 shadow-lg" />
   </Motion>
 </template>

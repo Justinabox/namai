@@ -1,6 +1,6 @@
 ---
 title: 'Nova'
-description: 'compact educational device for underdeveloped countries, integrated LLM and Wikipedia embedding search, fully off the grid'
+description: 'compact off-grid learning device for underserved regions, with a local LLM and Wikipedia search'
 scope: 'Deliveried 3 MVP units to South Sudan: Fullstack, Gemma-3 with three concurrency, 150GB library, Wikipedia snapshot, RX580 based, fully off the grid'
 techstack: ['React', 'Python', 'Linux', 'FAISS', 'Gemma-3', 'Kiwix']
 roles: ['Head Engineer', 'Fullstack Developer', 'System Architect']

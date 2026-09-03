@@ -1,6 +1,6 @@
 ---
 title: 'Verisight'
-description: 'illuminating realities for Schizophrenic patients'
+description: 'illuminating reality for people living with schizophrenia'
 scope: 'XR MVP (Meta Quest), on-device object identification, and Gemini Live'
 techstack: ['Meta Quest', 'Websocket', 'Python', 'Unity', 'C#']
 roles: ['System Architect', 'Backend Developer']
@@ -46,7 +46,6 @@ items:
  - { cover: 'https://cdn.justzhu.com/prod/projects/verisight/gallery/1743816034.jpeg', width: 5712, height: 4284 }
  - { cover: 'https://cdn.justzhu.com/prod/projects/verisight/gallery/1743822543.jpeg', width: 5712, height: 4284 }
  - { cover: 'https://cdn.justzhu.com/prod/projects/verisight/gallery/1743964867.jpg', width: 646, height: 860 }
- - { cover: 'https://cdn.justzhu.com/prod/projects/verisight/gallery/1770080624.jpg', width: 4032, height: 3024 }
  - { cover: 'https://cdn.justzhu.com/prod/projects/verisight/gallery/1770080899.jpg', width: 1279, height: 1706 }
  - { cover: 'https://cdn.justzhu.com/prod/projects/verisight/gallery/1770080980.jpg', width: 1632, height: 918 }
  - { cover: 'https://cdn.justzhu.com/prod/projects/verisight/gallery/1770081000.jpg', width: 1126, height: 2000 }

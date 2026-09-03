@@ -1,6 +1,6 @@
 ---
 title: 'RaspPBX'
-description: 'standalone raspberry call center'
+description: 'standalone Raspberry Pi phone system'
 year: 2024
 height: 720
 width: 1280

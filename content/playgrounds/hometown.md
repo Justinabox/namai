@@ -1,6 +1,6 @@
 ---
 title: 'Hometown'
-description: 'emulated drones virtually in 3D maps, reconstructed via ODM'
+description: 'flying emulated drones through 3D maps reconstructed with ODM'
 year: 2025
 height: 1024
 width: 768

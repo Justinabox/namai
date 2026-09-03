@@ -1,6 +1,6 @@
 ---
 title: 'CandyScope'
-description: 'seed-deterministic procedurally generated letter-scape, breathing life into the static'
+description: 'procedurally generated letter-scape, deterministic from a single seed'
 scope: 'Frontend web application, three.js seed-deterministic procedurally generated letter-scape, sketched and animated in real-time'
 techstack: ['Nuxt.js', 'Three.js']
 roles: ['Fullstack Developer', 'Experience Designer']

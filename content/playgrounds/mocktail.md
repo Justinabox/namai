@@ -1,6 +1,6 @@
 ---
 title: 'Mocktail'
-description: 'corporate networking revamp for an office of 10+ employees'
+description: 'corporate network revamp for an office of 10+ people'
 year: 2025
 height: 738
 width: 1280

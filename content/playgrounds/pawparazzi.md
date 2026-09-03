@@ -1,6 +1,6 @@
 ---
 title: 'Pawparazzi'
-description: 'prototype iOS app, community for raising awareness of street cats!'
+description: 'prototype iOS app, a community raising awareness for street cats'
 scope: 'Testflight iOS app, social media around sharing photos of street cats and befriending animal lovers'
 techstack: ['Swift', 'Cloudflare Workers', 'Node.js', 'Supabase']
 roles: ['iOS Developer', 'Backend Developer']
@@ -17,7 +17,7 @@ cover: 'https://cdn.justzhu.com/prod/projects/pawparazzi/cover.jpg'
 type: 'image'
 page: 'gallery'
 tags: ['Mobile', 'Backend']
-category: 'Mobile'
+category: 'Technology'
 
 height: 1080
 width: 1920

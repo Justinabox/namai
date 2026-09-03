@@ -1,6 +1,6 @@
 ---
 title: 'STS Bridge'
-description: 'back in the days to link network between locations'
+description: 'linking networks between two locations, back in the day'
 year: 2023
 height: 1824
 width: 2690

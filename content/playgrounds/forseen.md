@@ -6,5 +6,5 @@ height: 489
 width: 1280
 cover: 'https://cdn.justzhu.com/prod/playgrounds/forseen/cover.jpg'
 tags: ['Concept', 'Design']
-category: 'Art·Design'
+category: 'Creative'
 ---

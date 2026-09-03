@@ -14,7 +14,7 @@ if (!project.value) {
 </script>
 
 <template>
-  <div class="h-full w-full overflow-y-auto overflow-x-hidden">
+  <div class="w-full overflow-x-hidden">
     <div class="w-full flex flex-row gap-8 px-8 lg:px-16 xl:px-20 justify-between py-8">
       <!-- Gallery -->
       <div v-if="project?.page === 'gallery'" class="grow min-w-0">
@@ -23,10 +23,10 @@ if (!project.value) {
 
       <!-- Case study -->
       <!-- Left sidebar -->
-      <aside v-if="project?.page === 'case-study'" class="sticky top-0 h-full 2xl:w-[300px] mr-4 xl:mr-8 shrink-0 text-neutral-600 text-3xl xl:text-4xl 2xl:text-5xl font-pixelify-sans hidden sm:block">
-        <a class="flex flex-row items-center gap-2 text-neutral-600 pb-6">{{ project?.title }}</a>
+      <aside v-if="project?.page === 'case-study'" class="sticky top-0 h-full 2xl:w-[300px] mr-4 xl:mr-8 shrink-0 text-neutral-400 text-3xl xl:text-4xl 2xl:text-5xl font-pixelify-sans hidden sm:block">
+        <a class="flex flex-row items-center gap-2 text-ink pb-6">{{ project?.title }}</a>
         <a class="flex flex-row items-center gap-2">· Intro</a>
-        <a class="flex flex-row items-center gap-2 text-neutral-200">· Problem</a>
+        <a class="flex flex-row items-center gap-2 text-ink">· Problem</a>
         <a class="flex flex-row items-center gap-2">· Process</a>
         <a class="flex flex-row items-center gap-2">· Iteration</a>
         <a class="flex flex-row items-center gap-2">· Solution</a>
@@ -66,7 +66,7 @@ if (!project.value) {
 
       <!-- Project details -->
       <!-- Right sidebar -->
-      <aside class="sticky top-0 h-full w-[150px] xl:w-[200px] 2xl:w-[250px] shrink-0 flex-col gap-4 justify-between text-neutral-300 hidden md:flex">
+      <aside class="sticky top-0 h-full w-[150px] xl:w-[200px] 2xl:w-[250px] shrink-0 flex-col gap-4 justify-between text-ink hidden md:flex">
         
         <a v-if="project?.page === 'gallery'" class="text-3xl lg:text-4xl 2xl:text-5xl font-pixelify-sans pb-0.5 flex items-center gap-2">{{ project?.title }}</a>
 
@@ -74,14 +74,14 @@ if (!project.value) {
           <a class="text-xl lg:text-2xl 2xl:text-3xl font-pixelify-sans pb-0.5 flex items-center gap-2">
             <Icon icon="pixelarticons:moon-star" class="w-6 h-6" />Time
           </a>
-          <a class="text-lg lg:text-xl 2xl:text-2xl font-serif leading-none text-neutral-500 tracking-tight">{{ project?.time }}</a>
+          <a class="text-lg lg:text-xl 2xl:text-2xl font-serif leading-none text-neutral-400 tracking-tight">{{ project?.time }}</a>
         </div>
 
         <div class="flex flex-col" v-if="project?.scope">
           <a class="text-xl lg:text-2xl 2xl:text-3xl font-pixelify-sans pb-0.5 flex items-center gap-2">
             <Icon icon="pixelarticons:bullseye-arrow" class="w-6 h-6" />Scope
           </a>
-          <a class="text-lg lg:text-xl 2xl:text-2xl font-serif leading-none text-neutral-500 tracking-tight">{{ project?.scope }}</a>
+          <a class="text-lg lg:text-xl 2xl:text-2xl font-serif leading-none text-neutral-400 tracking-tight">{{ project?.scope }}</a>
         </div>
 
         <div class="flex flex-col" v-if="project?.roles">
@@ -89,7 +89,7 @@ if (!project.value) {
             <Icon icon="pixelarticons:suitcase" class="w-6 h-6" />Role
           </a>
           <a v-for="role in project?.roles" :key="role"
-            class="text-lg lg:text-xl 2xl:text-2xl font-serif leading-none text-neutral-500 tracking-tight">{{ role }}
+            class="text-lg lg:text-xl 2xl:text-2xl font-serif leading-none text-neutral-400 tracking-tight">{{ role }}
           </a>
         </div>
 
@@ -97,7 +97,7 @@ if (!project.value) {
           <div class="text-xl lg:text-2xl 2xl:text-3xl font-pixelify-sans pb-0.5 flex items-center gap-2">
             <Icon icon="pixelarticons:users" class="w-6 h-6" />Team
           </div>
-          <a v-for="person in project?.team" :key="person.name" class="flex flex-row items-center gap-1 text-neutral-500 hover:text-neutral-700 duration-200"
+          <a v-for="person in project?.team" :key="person.name" class="flex flex-row items-center gap-1 text-neutral-400 hover:text-ink duration-200"
             :href="person.link + '?utm_source=justzhu.com&utm_medium=referral&utm_campaign=projects'" target="_blank" rel="noopener noreferrer">
             <span class="text-xs lg:text-sm 2xl:text-md tracking-normal rounded-sm">{{ person.role }}</span>
             <span class="text-lg lg:text-xl 2xl:text-2xl font-serif leading-none tracking-tight">{{ person.name }}</span>
@@ -110,7 +110,7 @@ if (!project.value) {
             <Icon icon="pixelarticons:radio-tower" class="w-6 h-6" />Stack
           </a>
           <a v-for="techstack in project?.techstack" :key="techstack"
-            class="text-lg lg:text-xl 2xl:text-2xl font-serif leading-none text-neutral-500 tracking-tight">{{ techstack }}
+            class="text-lg lg:text-xl 2xl:text-2xl font-serif leading-none text-neutral-400 tracking-tight">{{ techstack }}
           </a>
         </div>
 
@@ -119,7 +119,7 @@ if (!project.value) {
             <Icon icon="pixelarticons:external-link" class="w-6 h-6" />Links
           </a>
           <a v-for="link in project?.links" :key="link.url"
-            class="text-lg lg:text-xl 2xl:text-2xl font-serif leading-none text-neutral-500 tracking-tight flex items-center gap-1 hover:text-neutral-700 duration-200"
+            class="text-lg lg:text-xl 2xl:text-2xl font-serif leading-none text-neutral-400 tracking-tight flex items-center gap-1 hover:text-ink duration-200"
             :href="link.url" target="_blank">{{ link.name }}
             <Icon class="w-4 h-4 2xl:w-6 2xl:h-6" icon="iconamoon:arrow-top-right-1-bold" />
           </a>

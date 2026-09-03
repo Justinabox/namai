@@ -1,6 +1,6 @@
 ---
 title: 'CourseX'
-description: 'selecting courses should be an enjoyment, not a chore'
+description: 'picking courses should be a pleasure, not a chore'
 scope: 'Fullstack web application, python data scraper, quality of life UI improvements'
 techstack: ['Nuxt.js', 'Tailwind CSS', 'Python', 'Selenium', 'Cloudflare Workers']
 roles: ['Fullstack Developer', 'UI/UX Designer']

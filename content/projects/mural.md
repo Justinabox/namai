@@ -1,6 +1,6 @@
 ---
 title: 'Mural'
-description: 'touch screen raspberry kiosk, wirelessly moving 2D cable driven display hovering over the mural'
+description: 'Raspberry Pi touchscreen kiosk steering a cable-driven display across the mural'
 scope: 'Raspberry Pi kiosk, two-axis cable driven display, integrated Wi-Fi'
 techstack: ['Raspberry Pi', 'Python', 'Websocket', 'Linux', 'GCode']
 roles: ['Sole Developer', 'UX Designer']

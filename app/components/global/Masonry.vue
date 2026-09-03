@@ -162,7 +162,7 @@ if (import.meta.env.DEV && errors.value.length > 0) {
       :class="['mb-4 break-inside-avoid', itemClass]"
     >
       <slot name="item" :item="item" :index="index">
-        <figure class="rounded-md border-2 border-neutral-800 bg-neutral-950/40 overflow-hidden group">
+        <figure class="rounded-lg overflow-hidden group">
           <div class="w-full bg-crossing" :style="{ aspectRatio: getAspectRatio(item) }">
             <DashVideo
               v-if="getItemType(item) === 'video'"
@@ -187,8 +187,8 @@ if (import.meta.env.DEV && errors.value.length > 0) {
             <!-- <NuxtPicture v-else provider="cloudflare" :src="project.cover" :alt="project.title" class="rounded-sm object-contain w-full h-auto sm:max-h-[80vh]" loading="lazy" preload/> -->
           </div>
           <figcaption v-if="item.title || item.description" class="p-3">
-            <p v-if="item.title" class="text-xl font-pixelify-sans text-neutral-100">{{ item.title }}</p>
-            <p v-if="item.description" class="text-sm text-neutral-500 text-wrap">{{ item.description }}</p>
+            <p v-if="item.title" class="text-xl font-pixelify-sans text-ink">{{ item.title }}</p>
+            <p v-if="item.description" class="text-sm text-neutral-400 text-wrap">{{ item.description }}</p>
           </figcaption>
         </figure>
       </slot>

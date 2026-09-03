@@ -1,6 +1,6 @@
 ---
 title: 'PokeBowl'
-description: 'grocery shopping list app, automatically create shopping list from web recipes!'
+description: 'grocery app that builds your shopping list from a web recipe'
 scope: 'Testflight iOS app, automatically scrap given website URL and create grocery list'
 techstack: ['Cerebras', 'Python', 'Swift', 'WebKit']
 roles: ['iOS Developer', 'System Architect']
@@ -15,7 +15,7 @@ cover: 'https://cdn.justzhu.com/prod/projects/pokebowl/cover.jpg'
 type: 'image'
 page: 'gallery'
 tags: ['Mobile', 'Backend']
-category: 'Mobile'
+category: 'Technology'
 
 links:
  - { name: 'Presentation', url: 'https://www.canva.com/design/DAG2qUMg2vU/vqh2XQT0xX3EWIiO6JhEGQ/view?utm_content=DAG2qUMg2vU&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hc07c5e4504' }
