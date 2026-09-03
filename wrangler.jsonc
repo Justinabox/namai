@@ -21,9 +21,12 @@
         "directory": ".output/public",
         "not_found_handling": "404-page"
       },
+      // www.justzhu.com is not here yet: it still has externally managed DNS
+      // records, and Cloudflare refuses to attach a Worker custom domain over
+      // them. Clear that record, then add:
+      //   { "pattern": "www.justzhu.com", "custom_domain": true }
       "routes": [
-        { "pattern": "justzhu.com", "custom_domain": true },
-        { "pattern": "www.justzhu.com", "custom_domain": true }
+        { "pattern": "justzhu.com", "custom_domain": true }
       ]
     }
   }
