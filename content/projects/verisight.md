@@ -14,7 +14,7 @@ year: 2025
 weight: 1
 cover: 'https://customer-3c2ziqxt3fiyfydw.cloudflarestream.com/6d6fbf2ccaf1951a27284515a1f9b983/manifest/video.mpd'
 type: 'video'
-page: 'gallery'
+page: 'case-study'
 tags: ['XR', 'Backend']
 category: 'Technology'
 
@@ -34,6 +34,11 @@ controls: true
 
 <br/>
 <br/>
+
+> “Knowing that you're crazy doesn't make the crazy things stop happening.” - Mark Vonnegut
+
+There are not many ways a schizophrenia patient can know if a person they are talking to or spiders on the wall, is real or not.
+
 
 # Process Gallery
 

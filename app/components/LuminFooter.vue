@@ -108,7 +108,7 @@ onMounted(() => {
 
   // The camera turns in place, so the terrain has to reach past the fog in
   // every direction, not just ahead.
-  terrain = new NoiseTerrain(scene, { seed: 'slow-tide-harbour', range: 9, chunkSize: 48, shade: [0.42, 1] })
+  terrain = new NoiseTerrain(scene, { seed: '8192', range: 8, chunkSize: 48, shade: [0.42, 1] })
 
   resize()
 
