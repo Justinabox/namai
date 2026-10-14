@@ -17,6 +17,10 @@ export default defineNuxtConfig({
   modules: ['@nuxt/content', '@nuxt/image', '@nuxt/ui', '@nuxt/fonts'],
   css: ['~/assets/css/main.css'],
   nitro: {
+    // The site ships as static assets (see wrangler.jsonc). Pin the preset so
+    // Cloudflare's CI doesn't auto-detect cloudflare-module, which generates a
+    // redirected wrangler config that can't carry the `release` environment.
+    preset: 'static',
     prerender: { routes: projectRoutes },
   },
   routeRules: {
